@@ -1,8 +1,6 @@
 package com.brian.laudexback.service;
 
-import com.brian.laudexback.exceptions.StudentNotFoundException;
 import com.brian.laudexback.model.Role;
-import com.brian.laudexback.model.Student;
 import com.brian.laudexback.model.User;
 import com.brian.laudexback.repository.RoleRepository;
 import com.brian.laudexback.repository.UserRepository;

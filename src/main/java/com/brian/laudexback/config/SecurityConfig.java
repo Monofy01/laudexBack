@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,23 +23,32 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // this class allows us to specify the configuration of access to published resources
+
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder; //encoder class
 
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        super.configure(auth);
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.cors().and().csrf().disable();
+        http.authorizeRequests().antMatchers("/login").permitAll().and().formLogin();
+        // SWAGGER DOC
+//        http.authorizeRequests().antMatchers("/v2/api-docs", "/swagger-resources/**", "/swagger-ui/**").permitAll();
+        http.authorizeRequests().antMatchers("/v2/api-docs",
+                "/configuration/ui/**",
+                "/swagger-resources",
+                "/configuration/security",
+                "/swagger-ui.html",
+                "/webjars/**",
+                "/swagger-resources/configuration/ui",
+                "/swagger-ui").permitAll();
 
 
-
-
-        http.csrf().disable(); // disable for token bearer
         http.sessionManagement().sessionCreationPolicy(STATELESS);
 
         //  ROLE_ROOT can create new users and new roles in different endpoints
@@ -52,14 +62,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(PUT, "/laudex/update/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ROOT");
         http.authorizeRequests().antMatchers(DELETE, "/laudex/delete/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ROOT");
 
-        // ROLE_ADMIN can create new students
+
+
+        // ROLE_STUDENT can see students
         http.authorizeRequests().antMatchers(GET, "/laudex/all/**").hasAnyAuthority("ROLE_STUDENT");
-        http.authorizeRequests().anyRequest().authenticated();
+
+//        http.authorizeRequests().anyRequest().authenticated(); // others needs authentication
+        http.authorizeRequests().antMatchers("/swagger-ui/**", "/javainuse-openapi/**").permitAll();
+
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-
     }
+
 
     @Bean
     @Override
