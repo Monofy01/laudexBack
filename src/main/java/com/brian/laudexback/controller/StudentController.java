@@ -25,15 +25,6 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<?> getTest() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Datos user: " + auth.getPrincipal());
-        System.out.println("Datos permisos: " + auth.getAuthorities());
-        System.out.println("esta autenticado: " + auth.isAuthenticated());
-        return ResponseEntity.ok("hola");
-    }
-
     @GetMapping("/all")
     public ResponseEntity<List<Student>> getAllStudent() {
         List<Student> studentList = studentService.findAllStudent();
@@ -48,7 +39,6 @@ public class StudentController {
 
     @PostMapping("/add")
     public ResponseEntity<Student> addStudent(@RequestBody Student student) {
-        System.out.println(student);
         Student newStudent = studentService.addStudent(student);
         return new ResponseEntity<>(newStudent, HttpStatus.CREATED);
     }
