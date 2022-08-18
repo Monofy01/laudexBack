@@ -54,18 +54,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //  ROLE_ROOT can create new users and new roles in different endpoints
         http.authorizeRequests().antMatchers(GET, "/main/all/**").hasAnyAuthority("ROLE_ROOT");
         http.authorizeRequests().antMatchers(POST, "/main/user/add/**").hasAnyAuthority("ROLE_ROOT");
-        http.authorizeRequests().antMatchers(PUT, "/main/role/add/**").hasAnyAuthority("ROLE_ROOT");
+        http.authorizeRequests().antMatchers(POST, "/main/role/add/**").hasAnyAuthority("ROLE_ROOT");
+        http.authorizeRequests().antMatchers(POST, "/main/role/addToUser/**").hasAnyAuthority("ROLE_ROOT");
 
-         // ROLE_ADMIN can create new students
-        http.authorizeRequests().antMatchers(GET, "/laudex/all/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ROOT");
+         // ROLE_ADMIN can create new students and ROLE_STUDENT can see students
+        http.authorizeRequests().antMatchers(GET, "/laudex/all/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ROOT","ROLE_STUDENT");
         http.authorizeRequests().antMatchers(POST, "/laudex/add/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ROOT");
         http.authorizeRequests().antMatchers(PUT, "/laudex/update/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ROOT");
         http.authorizeRequests().antMatchers(DELETE, "/laudex/delete/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ROOT");
-
-
-
-        // ROLE_STUDENT can see students
-        http.authorizeRequests().antMatchers(GET, "/laudex/all/**").hasAnyAuthority("ROLE_STUDENT");
 
 //        http.authorizeRequests().anyRequest().authenticated(); // others needs authentication
         http.authorizeRequests().antMatchers("/swagger-ui/**", "/javainuse-openapi/**").permitAll();
